@@ -875,7 +875,6 @@ export default {
           }
         } catch (error) {
           this.toastWarning(this.$t('notification:page.invalidBlock'))
-          console.log(error)
         }
       }
     },

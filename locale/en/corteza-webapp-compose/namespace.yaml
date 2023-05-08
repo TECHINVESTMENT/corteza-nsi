@@ -57,6 +57,7 @@ configure: Configure namespace
 manage:
   title: Manage namespaces
   list-view: Back to namespace list
+  unsavedChanges: Unsaved changes will be lost. Do you wish to leave the page?
 
   disabled: Disabled
 

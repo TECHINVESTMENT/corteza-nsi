@@ -451,6 +451,7 @@
 </template>
 
 <script>
+import { isEqual } from 'lodash'
 import { mapGetters, mapActions } from 'vuex'
 import draggable from 'vuedraggable'
 import FieldConfigurator from 'corteza-webapp-compose/src/components/ModuleFields/Configurator'
@@ -515,6 +516,7 @@ export default {
 
       updateField: null,
       module: undefined,
+      initialModuleState: undefined,
       hasRecords: true,
       processing: false,
 
@@ -642,6 +644,7 @@ export default {
       immediate: true,
       handler (moduleID) {
         this.module = undefined
+        this.initialModuleState = undefined
 
         /**
          * Every time module changes we switch to the 1st tab
@@ -653,6 +656,7 @@ export default {
             { fields: [new compose.ModuleFieldString({ fieldID: NoID, name: this.$t('general.placeholder.sample') })] },
             this.namespace,
           )
+          this.initialModuleState = this.module.clone()
         } else {
           const params = {
             // make sure module is loaded from the API every time!
@@ -664,6 +668,7 @@ export default {
           this.findModuleByID(params).then((module) => {
             // Make a copy so that we do not change store item by ref
             this.module = module.clone()
+            this.initialModuleState = module.clone()
 
             const { moduleID, namespaceID, issues = [] } = this.module
 
@@ -691,6 +696,14 @@ export default {
     },
   },
 
+  beforeRouteUpdate (to, from, next) {
+    this.checkUnsavedModule(next)
+  },
+
+  beforeRouteLeave (to, from, next) {
+    this.checkUnsavedModule(next)
+  },
+
   methods: {
     ...mapActions({
       findModuleByID: 'module/findByID',
@@ -700,6 +713,10 @@ export default {
       deleteModule: 'module/delete',
       deletePage: 'page/delete',
     }),
+
+    checkUnsavedModule (next) {
+      next(!isEqual(this.module.clone(), this.initialModuleState.clone()) ? window.confirm(this.$t('general.unsavedChanges')) : true)
+    },
 
     handleNewField () {
       this.module.fields.push(new compose.ModuleFieldString())
@@ -765,6 +782,7 @@ export default {
           }
 
           this.module = new compose.Module({ ...module }, this.namespace)
+          this.initialModuleState = this.module.clone()
 
           this.toastSuccess(this.$t('notification:module.created'))
           if (closeOnSuccess) {
@@ -779,6 +797,8 @@ export default {
       } else {
         this.updateModule({ ...this.module, resourceTranslationLanguage }).then(module => {
           this.module = new compose.Module({ ...module }, this.namespace)
+          this.initialModuleState = this.module.clone()
+
           this.toastSuccess(this.$t('notification:module.saved'))
           if (closeOnSuccess) {
             this.$router.push({ name: 'admin.modules' })
@@ -811,6 +831,7 @@ export default {
         this.$SystemAPI.dalConnectionRead({ connectionID })
           .then(connection => {
             this.connection = connection
+            this.initialModuleState.config.dal.connectionID = connection.connectionID
           })
           .catch(this.toastErrorHandler(this.$t('notification:connection.read-failed')))
           .finally(() => {
