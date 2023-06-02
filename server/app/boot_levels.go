@@ -32,6 +32,7 @@ import (
 	"github.com/cortezaproject/corteza/server/pkg/messagebus"
 	"github.com/cortezaproject/corteza/server/pkg/monitor"
 	"github.com/cortezaproject/corteza/server/pkg/options"
+	"github.com/cortezaproject/corteza/server/pkg/plugin"
 	"github.com/cortezaproject/corteza/server/pkg/provision"
 	"github.com/cortezaproject/corteza/server/pkg/rbac"
 	"github.com/cortezaproject/corteza/server/pkg/scheduler"
@@ -457,6 +458,14 @@ func (app *CortezaApp) InitServices(ctx context.Context) (err error) {
 			return fmt.Errorf("could not initialize discovery services: %w", err)
 		}
 	}
+
+	app.Log.Debug("enabling Corteza Plugin service")
+
+	plugin.Setup()
+	plugin.Client2()
+	// plugin.Client()
+	plugin.Service().RegisterAutomation(autService.Registry())
+	app.Log.Debug("after plugin service")
 
 	app.lvl = bootLevelServicesInitialized
 	return
