@@ -41,7 +41,7 @@ const defaults: Readonly<Options> = Object.freeze({
   maxWidth: '',
   borderRadius: '',
   margin: 'auto',
-  backgroundColor: '',
+  backgroundColor: '#FFFFFF00',
   magnifyOption: '',
   clickToView: true,
   enableDownload: true
