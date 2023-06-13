@@ -34,7 +34,7 @@
           </template>
         </vue-select>
 
-        <b-input-group-append>
+        <b-input-group-append v-if="!hideNamespaceList">
           <b-button
             v-if="canManageNamespaces"
             :disabled="canUpdateNamespace"
