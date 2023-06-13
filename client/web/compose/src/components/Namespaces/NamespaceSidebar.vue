@@ -1,7 +1,10 @@
 <template>
   <div>
     <portal to="sidebar-header-expanded">
-      <b-input-group class="d-flex w-100 mt-2"  v-if="!hideNamespaceList">
+      <b-input-group
+        v-if="!hideNamespaceList"
+        class="d-flex w-100 mt-2"
+      >
         <vue-select
           key="namespaceID"
           data-test-id="select-namespace"
@@ -33,7 +36,7 @@
           </template>
         </vue-select>
 
-        <b-input-group-append  v-if="canManageNamespaces">
+        <b-input-group-append v-if="canManageNamespaces">
           <b-button
             :disabled="!canUpdateNamespace"
             :title="$t('editNamespace')"
