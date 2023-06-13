@@ -1,9 +1,8 @@
 <template>
   <div>
     <portal to="sidebar-header-expanded">
-      <b-input-group class="d-flex w-100 mt-2">
+      <b-input-group class="d-flex w-100 mt-2"  v-if="!hideNamespaceList">
         <vue-select
-          v-if="!hideNamespaceList"
           key="namespaceID"
           data-test-id="select-namespace"
           label="name"
@@ -34,10 +33,9 @@
           </template>
         </vue-select>
 
-        <b-input-group-append v-if="!hideNamespaceList">
+        <b-input-group-append  v-if="canManageNamespaces">
           <b-button
-            v-if="canManageNamespaces"
-            :disabled="canUpdateNamespace"
+            :disabled="!canUpdateNamespace"
             :title="$t('editNamespace')"
             variant="primary"
             class="d-flex align-items-center"
@@ -293,7 +291,7 @@ export default {
     },
 
     canUpdateNamespace () {
-      return this.namespace ? !this.namespace.canUpdateNamespace : false
+      return this.namespace ? this.namespace.canUpdateNamespace : false
     },
 
     namespaceID () {
