@@ -220,6 +220,7 @@ import { latLng } from 'leaflet'
 import { LControl } from 'vue2-leaflet'
 import { OpenStreetMapProvider } from 'leaflet-geosearch'
 import { components } from '@cortezaproject/corteza-vue'
+import { isNumber } from 'lodash'
 const { CInputSearch } = components
 
 export default {
@@ -281,6 +282,8 @@ export default {
     if (this.field.isMulti) {
       this.localValue = this.value.map(v => {
         return JSON.parse(v || '{"coordinates":[]}')
+      }).filter(({ coordinates = [] }) => {
+        return coordinates[0] && coordinates[1]
       })
     } else {
       this.localValue = JSON.parse(this.value || '{"coordinates":[]}')
@@ -294,8 +297,13 @@ export default {
   methods: {
     openMap (index) {
       this.localValueIndex = index
-      const firstCoordinates = (index ? this.localValue[index] : (this.field.isMulti ? this.localValue[0] : this.localValue)) || {}
-      this.map.center = firstCoordinates.coordinates && firstCoordinates.coordinates.length ? firstCoordinates.coordinates : this.field.options.center
+      const firstCoordinates = (index >= 0 ? this.localValue[index] : this.localValue) || {}
+      firstCoordinates.coordinates = [...firstCoordinates.coordinates]
+
+      this.map.center = firstCoordinates.coordinates &&
+              firstCoordinates.coordinates.length &&
+              firstCoordinates.coordinates.every(isNumber) ? firstCoordinates.coordinates : this.field.options.center
+
       this.map.zoom = index >= 0 ? 13 : this.field.options.zoom
       this.map.show = true
 
@@ -307,7 +315,7 @@ export default {
     getLatLng (coordinates = [undefined, undefined]) {
       const [lat, lng] = coordinates
 
-      if (lat && lng) {
+      if (isNumber(lat) && isNumber(lng)) {
         return latLng(lat, lng)
       }
     },
