@@ -12,6 +12,7 @@ import (
 
 	"github.com/cortezaproject/corteza/server/pkg/logger"
 	"github.com/cortezaproject/corteza/server/pkg/options"
+	"github.com/cortezaproject/corteza/server/system/service"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 )
@@ -138,6 +139,12 @@ func serveConfig(r chi.Router, config webappConfig) {
 		if len(config.sentryUrl) > 0 {
 			_, _ = fmt.Fprintf(w, line, "SentryDSN", config.sentryUrl)
 		}
+	})
+
+	r.Get(options.CleanBase(config.appUrl, "custom.css"), func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "text/css")
+
+		_, _ = fmt.Fprint(w, service.CurrentSettings.WithDefaults().UI.CustomCSS)
 	})
 }
 
