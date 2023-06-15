@@ -282,8 +282,6 @@ export default {
     if (this.field.isMulti) {
       this.localValue = this.value.map(v => {
         return JSON.parse(v || '{"coordinates":[]}')
-      }).filter(({ coordinates = [] }) => {
-        return coordinates[0] && coordinates[1]
       })
     } else {
       this.localValue = JSON.parse(this.value || '{"coordinates":[]}')
