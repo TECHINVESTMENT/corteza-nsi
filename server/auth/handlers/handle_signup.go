@@ -43,7 +43,7 @@ func (h *AuthHandlers) signupProc(req *request.AuthReq) error {
 				zap.String("email", newUser.Email),
 				logger.Uint64s("roles", newUser.Roles()),
 			)
-			req.RedirectTo = GetLinks().Profile
+			req.RedirectTo = GetLinks().Base
 
 			req.AuthUser = request.NewAuthUser(h.Settings, newUser, false)
 
@@ -115,7 +115,7 @@ func (h *AuthHandlers) confirmEmail(req *request.AuthReq) (err error) {
 				Text: t("signup.alerts.email-confirmed-logged-in"),
 			})
 
-			req.RedirectTo = GetLinks().Profile
+			req.RedirectTo = GetLinks().Base
 
 			req.AuthUser = request.NewAuthUser(h.Settings, user, false)
 
